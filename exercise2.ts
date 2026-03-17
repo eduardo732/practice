@@ -23,7 +23,19 @@ interface ProcessedResult {
 
 function lambdaHandler(event: LambdaEvent): ProcessedResult {
   // TODO: Implement here
-  return { summary: {}, processedCount: 0 };
+  const summary: Record<string, { count: number; total: number }> = {};
+  let processedCount = 0;
+
+  for (const record of event.Records) {
+    if (!summary[record.type]) {
+      summary[record.type] = { count: 0, total: 0 };
+    }
+    summary[record.type].count += 1;
+    summary[record.type].total += record.amount;
+    processedCount += 1;
+  }
+
+  return { summary, processedCount };
 }
 
 // Test
